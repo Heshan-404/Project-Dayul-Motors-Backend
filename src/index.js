@@ -1,5 +1,5 @@
-const express = require("express");
-const { Pool } = require("pg");
+import express from "express";
+import { Pool } from "pg";
 
 // Replace with your actual connection string
 const connectionString =
