@@ -1,5 +1,12 @@
 import express from "express";
 import { Pool } from "pg";
+import dotenv from "dotenv";
+import cors from "cors";
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "20mb" }));
 
 // Replace with your actual connection string
 const connectionString =
@@ -9,8 +16,6 @@ const connectionString =
 const pool = new Pool({
   connectionString: connectionString,
 });
-
-const app = express();
 
 // Function to get all users from the database
 const getUsers = async () => {
