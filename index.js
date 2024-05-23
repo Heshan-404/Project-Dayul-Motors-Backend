@@ -1,7 +1,6 @@
 // server.js (or index.js)
 import express from "express";
 import cors from "cors";
-import pool from "./src/utils/database.connection";
 import logger from "./src/utils/logger";
 
 const app = express();
