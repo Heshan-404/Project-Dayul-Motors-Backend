@@ -1,7 +1,8 @@
 // server.js (or index.js)
 import express from "express";
 import cors from "cors";
-import logger from "./src/utils/logger";
+import pool from "./src/utils/database.connection";
+import config from "./src/config/config";
 
 const app = express();
 app.use(cors());
@@ -9,9 +10,10 @@ app.use(express.json({ limit: "20mb" }));
 
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to the Dayul Motors Backend</h1>");
+  pool.connect();
 });
 
-const PORT = process.env.PORT || 3000; // You can still use config.PORT here
+const PORT = config.PORT;
 app.listen(PORT, () => {
-  logger.info(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });

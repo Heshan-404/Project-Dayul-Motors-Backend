@@ -1,7 +1,6 @@
 // utils/database.connection.js
 import pg from "pg";
 import config from "../config/config";
-import logger from "./logger";
 
 const pool = new pg.Pool({
   connectionString: config.DATABASE_URL,
@@ -9,9 +8,9 @@ const pool = new pg.Pool({
 
 pool.query("SELECT NOW()", (err, res) => {
   if (err) {
-    logger.error("Error connecting to database:", err);
+    console.log("Error connecting to database:", err);
   } else {
-    logger.info("Database Synced...");
+    console.log("Database Synced...");
   }
 });
 
