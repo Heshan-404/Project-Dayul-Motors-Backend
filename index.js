@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 
 app.get("/", (req, res) => {
-  res.send("<h1>Welcome to the Dayul Motors Backend</h1>");
+  res.send("<h1>Welcome to the Dayul Motors Backend.</h1>");
   pool.connect();
 });
 
