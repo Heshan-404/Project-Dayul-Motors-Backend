@@ -1,14 +1,12 @@
-import otpGenerator from "otp-generator";
-
-// Function to generate an OTP
+// Function to generate an OTP with only uppercase letters
 const generateOTP = () => {
-  // Generate a 6-digit OTP
-  const otp = otpGenerator.generate(6, {
-    digits: true,
-    alphabets: true,
-    upperCase: true,
-    specialChars: false,
-  });
+  let otp = "";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    otp += characters.charAt(randomIndex);
+  }
 
   return otp;
 };

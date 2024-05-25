@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import pool from "./src/utils/database.connection";
 import config from "./src/config/config";
-import authRoutes from "./src/api/routes/authRoutes";
+import authUserRoutes from "./src/api/routes/UserRoutes/authRoutes";
+import authAdminRoutes from "./src/api/routes/AdminRoutes/authRoutes";
 
 const app = express();
 app.use(cors());
@@ -13,7 +14,8 @@ app.get("/", (req, res) => {
   pool.connect();
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth/user", authUserRoutes);
+app.use("/api/auth/admin", authAdminRoutes);
 
 const PORT = config.PORT;
 app.listen(PORT, () => {

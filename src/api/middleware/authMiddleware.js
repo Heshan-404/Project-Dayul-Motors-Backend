@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "../../config/config";
-
+// Middleware function to authenticate requests
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -9,13 +9,12 @@ const authMiddleware = (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  try {
-    const decoded = jwt.verify(token, config.JWT_SECRET);
-    req.user = decoded;
+  jwt.verify(token, config.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
-  }
+  });
 };
 
-export default authMiddleware;
+module.exports = authMiddleware;

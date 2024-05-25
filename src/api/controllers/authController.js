@@ -43,7 +43,10 @@ export const OTPCheck = async (req, res) => {
         client.release();
         return res
           .status(200)
-          .json({ message: "OTP matched. Proceed with password reset." });
+          .json({
+            message: "OTP matched. Proceed with password reset.",
+            OTP: `${otp}`,
+          });
       } else {
         client.release();
         return res
@@ -81,10 +84,12 @@ export const sendOTP = async (req, res) => {
     await client.query(updateQuery, [otp, otpExpiration, email]);
     client.release();
 
+    const companyEmail = config.COMPANY_EMAIL;
+    const companyName = config.COMPANY_NAME;
     const mailOptions = {
       from: {
-        name: "Dayul Motors",
-        address: "pubg200212111@gmail.com",
+        name: `${companyName}`,
+        address: `${companyEmail}`,
       },
       to: `${email}`,
       subject: "Password Reset OTP",
@@ -157,7 +162,13 @@ export const loginUser = async (req, res) => {
       }
     );
 
-    res.json({ token });
+    res.json({
+      token: token,
+      user: {
+        name: user.fullname,
+        userid: user.userid,
+      },
+    });
   } catch (error) {
     console.error("Error during user login:", error);
     res.status(500).json({ message: "Server error", error });

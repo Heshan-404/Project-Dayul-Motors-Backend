@@ -5,8 +5,8 @@ import {
   passwordReset,
   sendOTP,
   OTPCheck,
-} from "../controllers/authController";
-import authMiddleware from "../middleware/authMiddleware";
+} from "../../controllers/authController";
+import authMiddleware from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -15,8 +15,10 @@ router.post("/login", loginUser);
 router.post("/reset", sendOTP);
 router.post("/checkOTP", OTPCheck);
 router.post("/reset-password", passwordReset);
-router.get("/protected", authMiddleware, (req, res) => {
-  res.json({ message: "This is a protected route", user: req.user });
+router.post("/protected/navigationbar", authMiddleware, (req, res) => {
+  res.json({
+    cart: 3,
+  });
 });
 
 export default router;
