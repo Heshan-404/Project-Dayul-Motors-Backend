@@ -41,12 +41,10 @@ export const OTPCheck = async (req, res) => {
       if (storedOTP.toUpperCase() === otp.toUpperCase()) {
         // Convert both OTPs to uppercase for comparison
         client.release();
-        return res
-          .status(200)
-          .json({
-            message: "OTP matched. Proceed with password reset.",
-            OTP: `${otp}`,
-          });
+        return res.status(200).json({
+          message: "OTP matched. Proceed with password reset.",
+          OTP: `${otp}`,
+        });
       } else {
         client.release();
         return res
@@ -118,12 +116,35 @@ export const registerUser = async (req, res) => {
   const { fullName, email, phoneNo, address, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userID = `USR${Math.floor(Math.random() * 10000)}`;
+
+    // Fetch the latest user ID from the database
+    const client = await pool.connect();
+    const latestUserQuery = `SELECT userid FROM users ORDER BY userid DESC LIMIT 1`;
+    const result = await client.query(latestUserQuery);
+
+    let newUserID;
+    if (result.rows.length === 0) {
+      // If no users exist, start with USR_00001
+      newUserID = "USR_00001";
+    } else {
+      const latestUserID = result.rows[0].userid;
+      const userNumber = parseInt(latestUserID.replace("USR_", "")) + 1;
+      newUserID = `USR_${String(userNumber).padStart(5, "0")}`;
+    }
+
+    client.release();
     const query = `
       INSERT INTO Users (UserID, FullName, Email, PhoneNo, Address, Password)
       VALUES ($1, $2, $3, $4, $5, $6)
     `;
-    const values = [userID, fullName, email, phoneNo, address, hashedPassword];
+    const values = [
+      newUserID,
+      fullName,
+      email,
+      phoneNo,
+      address,
+      hashedPassword,
+    ];
 
     await pool.query(query, values);
 
@@ -172,5 +193,67 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     console.error("Error during user login:", error);
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const freezeUnfreezeUser = async (req, res) => {
+  const { userId } = req.params;
+  const { status } = req.body;
+  try {
+    const client = await pool.connect();
+    const updateQuery = `UPDATE users SET status = $1 WHERE userid = $2;`;
+    await client.query(updateQuery, [status, userId]);
+    client.release();
+
+    res.status(200).json({ message: "User frozen successfully" });
+  } catch (error) {
+    console.error("Error during user freezing:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const fetchAllUsers = async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const queryText = "SELECT * FROM users";
+    const result = await client.query(queryText);
+    client.release();
+    const users = result.rows;
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const updateUserDetails = async (req, res) => {
+  const { userid } = req.params;
+  const { fullname, email, phoneno, address } = req.body;
+  try {
+    // Check if the user exists
+    const checkUserQuery = "SELECT * FROM users WHERE userid = $1";
+    const checkUserValues = [userid];
+    const userExists = await pool.query(checkUserQuery, checkUserValues);
+    if (userExists.rowCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user details
+    const query = `
+      UPDATE users
+      SET fullname = \$1, email = \$2, phoneno = \$3, address = \$4
+      WHERE userid = \$5
+    `;
+    const values = [fullname, email, phoneno, address, userid];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ message: "Failed to update user details" });
+    }
+
+    res.json({ message: "User details updated successfully" });
+  } catch (error) {
+    console.error("Error during user details update:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

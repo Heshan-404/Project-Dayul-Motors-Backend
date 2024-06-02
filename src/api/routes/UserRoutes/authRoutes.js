@@ -5,7 +5,7 @@ import {
   passwordReset,
   sendOTP,
   OTPCheck,
-} from "../../controllers/authController";
+} from "../../controllers/userAuthController";
 import authMiddleware from "../../middleware/authMiddleware";
 
 const router = express.Router();
