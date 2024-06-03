@@ -43,7 +43,7 @@ export const getAllProducts = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const productid = req.params.productid; // Get the product ID from the URL
-
+    console.log(req.body.productdescription);
     // Handle file upload using Multer
     upload.single("image")(req, res, async function (err) {
       if (err instanceof multer.MulterError) {

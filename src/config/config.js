@@ -12,6 +12,9 @@ const config = {
   COMPANY_EMAIL: process.env.COMPANY_EMAIL,
   EMAIL_TRANSPOTER_KEY: process.env.EMAIL_TRANSPOTER_KEY,
   COMPANY_NAME: process.env.COMPANY_NAME,
+  CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 };
 
 export default config;
