@@ -5,6 +5,7 @@ import {
   passwordReset,
   sendOTP,
   OTPCheck,
+  addOrder,
 } from "../../controllers/userAuthController";
 import authMiddleware from "../../middleware/authMiddleware";
 
@@ -21,4 +22,11 @@ router.post("/protected/navigationbar", authMiddleware, (req, res) => {
   });
 });
 
+router.get("/protected/add_order", authMiddleware, (req, res) => {
+  res.json({
+    req: req.userid,
+  });
+});
+
+router.post("/protected/add_order", authMiddleware, addOrder);
 export default router;

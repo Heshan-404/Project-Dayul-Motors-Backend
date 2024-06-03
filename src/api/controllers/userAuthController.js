@@ -117,28 +117,28 @@ export const registerUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Fetch the latest user ID from the database
+    // Fetch the latest user id from the database
     const client = await pool.connect();
     const latestUserQuery = `SELECT userid FROM users ORDER BY userid DESC LIMIT 1`;
     const result = await client.query(latestUserQuery);
 
-    let newUserID;
+    let newUserid;
     if (result.rows.length === 0) {
       // If no users exist, start with USR_00001
-      newUserID = "USR_00001";
+      newUserid = "USR_00001";
     } else {
-      const latestUserID = result.rows[0].userid;
-      const userNumber = parseInt(latestUserID.replace("USR_", "")) + 1;
-      newUserID = `USR_${String(userNumber).padStart(5, "0")}`;
+      const latestUserid = result.rows[0].userid;
+      const userNumber = parseInt(latestUserid.replace("USR_", "")) + 1;
+      newUserid = `USR_${String(userNumber).padStart(5, "0")}`;
     }
 
     client.release();
     const query = `
-      INSERT INTO Users (UserID, FullName, Email, PhoneNo, Address, Password)
+      INSERT INTO Users (Userid, FullName, Email, PhoneNo, Address, Password)
       VALUES ($1, $2, $3, $4, $5, $6)
     `;
     const values = [
-      newUserID,
+      newUserid,
       fullName,
       email,
       phoneNo,
@@ -197,12 +197,12 @@ export const loginUser = async (req, res) => {
 };
 
 export const freezeUnfreezeUser = async (req, res) => {
-  const { userId } = req.params;
+  const { userid } = req.params;
   const { status } = req.body;
   try {
     const client = await pool.connect();
     const updateQuery = `UPDATE users SET status = $1 WHERE userid = $2;`;
-    await client.query(updateQuery, [status, userId]);
+    await client.query(updateQuery, [status, userid]);
     client.release();
 
     res.status(200).json({ message: "User frozen successfully" });
@@ -255,5 +255,64 @@ export const updateUserDetails = async (req, res) => {
   } catch (error) {
     console.error("Error during user details update:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const addOrder = async (req, res) => {
+  const { userid, orderstatus, paymentmethod, totalamount } = req.body;
+  var orderStatus = orderstatus;
+  try {
+    // Get the last order ID from the database
+    const lastOrderResult = await pool.query(
+      "SELECT orderid FROM orders ORDER BY orderid DESC LIMIT 1"
+    );
+    let lastOrderId = "ORD_0000000";
+    if (lastOrderResult.rows.length > 0) {
+      lastOrderId = lastOrderResult.rows[0].orderid;
+    }
+
+    // Extract the numeric part of the last order ID and increment it
+    const lastOrderNumericPart = parseInt(lastOrderId.split("_")[1]);
+    const newOrderNumericPart = (lastOrderNumericPart + 1)
+      .toString()
+      .padStart(7, "0");
+    const newOrderId = `ORD_${newOrderNumericPart}`;
+
+    // Get the current date and time in Asia/Colombo timezone
+    const orderdate = new Date().toLocaleDateString("en-GB", {
+      timeZone: "Asia/Colombo",
+    });
+    const orderTime = new Date().toLocaleTimeString("en-GB", {
+      hour12: false,
+      timeZone: "Asia/Colombo",
+    });
+    if (paymentmethod == "Cash") {
+      orderStatus = "Pending";
+    } else {
+      orderStatus = "Active";
+    }
+    const queryText = `
+      INSERT INTO orders (orderid, userid, orderstatus, orderdate , paymentmethod, totalamount, ordertime)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    const values = [
+      newOrderId,
+      userid,
+      orderStatus,
+      orderdate,
+      paymentmethod,
+      totalamount,
+      orderTime,
+    ];
+
+    await pool.query(queryText, values);
+    res
+      .status(201)
+      .json({ message: "Order added successfully", orderid: newOrderId });
+  } catch (error) {
+    console.error("Error adding order:", error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error: " + error.message });
   }
 };

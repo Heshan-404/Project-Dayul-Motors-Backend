@@ -52,4 +52,5 @@ router.post("/protected/sidebar", adminAuthMiddleware, (req, res) => {
   });
 });
 router.get("/protected/fetch_all_users", adminAuthMiddleware, fetchAllUsers);
+
 export default router;

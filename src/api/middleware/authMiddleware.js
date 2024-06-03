@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "../../config/config";
+
 // Middleware function to authenticate requests
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -13,8 +14,18 @@ const authMiddleware = (req, res, next) => {
     if (err) {
       return res.status(401).json({ message: "Invalid token" });
     }
+
+    // Decode the token to get the userId
+    const decoded = jwt.decode(token);
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
+    // Attach the userId to the request object
+    req.userid = decoded.id;
+
     next();
   });
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;
