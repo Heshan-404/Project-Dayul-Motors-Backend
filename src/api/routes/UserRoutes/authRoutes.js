@@ -8,7 +8,7 @@ import {
   addOrder,
 } from "../../controllers/userAuthController";
 import authMiddleware from "../../middleware/authMiddleware";
-
+import shoppingRoutes from "../../controllers/shoppingExpirenceController";
 const router = express.Router();
 
 router.post("/register", registerUser);
@@ -21,7 +21,6 @@ router.post("/protected/navigationbar", authMiddleware, (req, res) => {
     cart: 3,
   });
 });
-
 router.get("/protected/add_order", authMiddleware, (req, res) => {
   res.json({
     req: req.userid,
