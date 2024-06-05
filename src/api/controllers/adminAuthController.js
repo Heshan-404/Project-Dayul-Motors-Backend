@@ -53,7 +53,6 @@ export const loginAdmin = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Password" });
     }
-
     const token = jwt.sign(
       { id: user.userid, email: user.email, level: user.level },
       config.JWT_ADMIN_SECRET,
@@ -86,7 +85,7 @@ export const adminDetails = async (req, res) => {
     } else {
       // Exclude sensitive information if admin level is not sufficient
       query =
-        "SELECT adminid, email, fullname FROM adminaccounts WHERE level != 3";
+        "SELECT adminid, email, fullname,phoneno,level,status FROM adminaccounts WHERE level != 3";
     }
 
     const result = await pool.query(query);

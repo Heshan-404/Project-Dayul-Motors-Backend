@@ -60,6 +60,7 @@ export const OTPCheck = async (req, res) => {
 
 export const sendOTP = async (req, res) => {
   const email = req.body.email;
+  console.log(email);
   try {
     const client = await pool.connect();
     const queryText = "SELECT * FROM users WHERE email = $1";
@@ -73,7 +74,7 @@ export const sendOTP = async (req, res) => {
 
     const otp = generateOTP().toUpperCase();
     const otpExpiration = new Date(Date.now() + 300000); // 5mins from now
-
+    console.log(otp);
     // Save the OTP and expiration time to the user
     const updateQuery = `
         UPDATE users 

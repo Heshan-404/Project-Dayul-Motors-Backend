@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addToCart,
   getBrands,
   getCategories,
   getCategoryName,
@@ -9,7 +10,7 @@ import {
   getProductsByCategory,
   getProductsByCategoryAndBrand,
 } from "../../controllers/shoppingExpirenceController";
-
+import userAuthMiddleware from "../../middleware/authMiddleware";
 const router = express.Router();
 
 // Routes for Categories
@@ -28,5 +29,7 @@ router.get(
   "/products/both/category/:categoryId/brand/:brandId",
   getProductsByCategoryAndBrand
 );
+
+router.post("/cart", userAuthMiddleware, addToCart);
 
 export default router;
