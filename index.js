@@ -9,6 +9,7 @@ import ordersManageRoutes from "./src/api/routes/AdminRoutes/orderManagement";
 import ShoppingExperinceRoutes from "./src/api/routes/ShoppingExperinceRoutes/ShoppingExperinceRoutes";
 import cartRouter from "./src/api/routes/cartRoutes";
 import authMiddleware from "./src/api/middleware/authMiddleware";
+import checkoutRoutes from "./src/api/routes/checkOutRoutes";
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
@@ -23,6 +24,7 @@ app.use("/api/auth/admin", authAdminRoutes);
 app.use("/api/auth/admin", productsManageRoutes);
 app.use("/api/auth/admin", ordersManageRoutes);
 app.use("/api/shop", ShoppingExperinceRoutes);
+app.use("/api/checkout", checkoutRoutes);
 app.use("/api/shopcart", authMiddleware, cartRouter);
 const PORT = config.PORT;
 app.listen(PORT, () => {

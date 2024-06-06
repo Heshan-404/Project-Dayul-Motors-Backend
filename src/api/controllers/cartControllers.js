@@ -34,7 +34,9 @@ exports.updateCartItemQuantity = async (req, res) => {
 // Function to delete a cart item
 exports.deleteCartItem = async (req, res) => {
   const { cartid, productid } = req.params;
-
+  console.log("====================================");
+  console.log(cartid);
+  console.log("====================================");
   try {
     await pool.query(
       "DELETE FROM cartitems WHERE cartid = $1 AND productid = $2",
