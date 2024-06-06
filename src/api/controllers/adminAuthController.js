@@ -171,3 +171,41 @@ export const updateAdminDetails = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const deleteAdmin = async (req, res) => {
+  const { adminid } = req.params;
+  try {
+    // Check if the admin exists
+    const checkAdminQuery = "SELECT * FROM adminaccounts WHERE adminid = $1";
+    const checkAdminValues = [adminid];
+    const adminExists = await pool.query(checkAdminQuery, checkAdminValues);
+    if (adminExists.rowCount === 0) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Delete the admin account
+    const deleteQuery = "DELETE FROM adminaccounts WHERE adminid = $1";
+    const deleteValues = [adminid];
+    await pool.query(deleteQuery, deleteValues);
+
+    res.json({ message: "Admin account deleted successfully" });
+  } catch (error) {
+    console.error("Error during admin deletion:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+export const getRootAdmins = async (req, res) => {
+  try {
+    console.log("====================================");
+    console.log("dsf");
+    console.log("====================================");
+    const query = "SELECT * FROM adminaccounts WHERE level = 3";
+    const result = await pool.query(query);
+    console.log("====================================");
+    console.log(result);
+    console.log("====================================");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching root admins:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

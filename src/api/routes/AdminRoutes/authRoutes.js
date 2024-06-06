@@ -6,6 +6,8 @@ import {
   unfreezeAdmin,
   freezeAdmin,
   updateAdminDetails,
+  deleteAdmin,
+  getRootAdmins,
 } from "../../controllers/adminAuthController";
 import adminAuthMiddleware from "../../middleware/adminAuthMiddleWare";
 import {
@@ -35,6 +37,11 @@ router.put(
   adminAuthMiddleware,
   updateAdminDetails
 );
+router.delete(
+  "/protected/admin_delete/:adminid",
+  adminAuthMiddleware,
+  deleteAdmin
+);
 
 router.put(
   "/protected/user_freeze_unfreeze/:userId",
@@ -53,4 +60,5 @@ router.post("/protected/sidebar", adminAuthMiddleware, (req, res) => {
 });
 router.get("/protected/fetch_all_users", adminAuthMiddleware, fetchAllUsers);
 
+router.get("/protected/rootadmins", getRootAdmins);
 export default router;
