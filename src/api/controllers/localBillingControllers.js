@@ -101,15 +101,27 @@ export const getAllProducts = async (req, res) => {
 // Place an order
 export const placeOrder = async (req, res) => {
   const { userid, paymentmethod, totalamount, items } = req.body;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Items array is required and should not be empty." });
+  }
+
   try {
     const orderid = await generateNextOrderID();
     const orderResult = await pool.query(
-      "INSERT INTO orders (orderid, userid, paymentmethod, totalamount,orderstatus) VALUES ($1, $2, $3, $4,$5) RETURNING *",
+      "INSERT INTO orders (orderid, userid, paymentmethod, totalamount, orderstatus) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [orderid, userid, paymentmethod, totalamount, "Completed"]
     );
 
     await Promise.all(
       items.map(async (item) => {
+        if (!item.productid || !item.price || !item.quantity) {
+          throw new Error(
+            "Each item must have a productid, price, and quantity."
+          );
+        }
         await pool.query(
           "INSERT INTO orderitems (orderid, productid, price, quantity) VALUES ($1, $2, $3, $4)",
           [orderid, item.productid, item.price, item.quantity]
@@ -123,6 +135,7 @@ export const placeOrder = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 export const generateNextOrderID = async () => {
   try {
     const result = await pool.query(

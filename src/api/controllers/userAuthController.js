@@ -200,6 +200,10 @@ export const loginUser = async (req, res) => {
 export const freezeUnfreezeUser = async (req, res) => {
   const { userid } = req.params;
   const { status } = req.body;
+  console.log("====================================");
+  console.log(status);
+  console.log(userid);
+  console.log("====================================");
   try {
     const client = await pool.connect();
     const updateQuery = `UPDATE users SET status = $1 WHERE userid = $2;`;

@@ -28,7 +28,7 @@ router.put(
   freezeAdmin
 );
 router.put(
-  "/protected/admin_unfreeze/:adminid",
+  "/protected/admin_active/:adminid",
   adminAuthMiddleware,
   unfreezeAdmin
 );
