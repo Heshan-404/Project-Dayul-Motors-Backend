@@ -1,10 +1,8 @@
 import pool from "../../utils/database.connection";
 
 const placeOrder = async (req, res) => {
-  const { userId, paymentMethod, totalAmount, orderItems } = req.body;
-  console.log("====================================");
-  console.log(req.body);
-  console.log("====================================");
+  const { paymentMethod, totalAmount, orderItems } = req.body;
+  const userId = req.userid;
   let client;
   try {
     // Acquire a client from the connection pool
