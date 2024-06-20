@@ -4,7 +4,6 @@ import config from "../../config/config";
 // Middleware function to authenticate requests
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
   if (!authHeader) {
     return res.status(401).json({ message: "No token provided" });
   }

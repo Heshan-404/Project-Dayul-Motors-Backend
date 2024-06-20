@@ -21,7 +21,7 @@ const router = express.Router();
 router.post("/register", registerAdmin);
 router.post("/login", loginAdmin);
 
-router.get("/protected/details", adminAuthMiddleware, adminDetails);
+router.get("/protected/details", adminDetails);
 router.put(
   "/protected/admin_freeze/:adminid",
   adminAuthMiddleware,
@@ -44,7 +44,7 @@ router.delete(
 );
 
 router.put(
-  "/protected/user_freeze_unfreeze/:userId",
+  "/protected/user_freeze_unfreeze/:userid",
   adminAuthMiddleware,
   freezeUnfreezeUser
 );
@@ -61,4 +61,6 @@ router.post("/protected/sidebar", adminAuthMiddleware, (req, res) => {
 router.get("/protected/fetch_all_users", adminAuthMiddleware, fetchAllUsers);
 
 router.get("/protected/rootadmins", getRootAdmins);
+
+router.post("/protected/token_verify", adminAuthMiddleware);
 export default router;

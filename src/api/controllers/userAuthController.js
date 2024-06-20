@@ -183,7 +183,6 @@ export const loginUser = async (req, res) => {
         expiresIn: config.JWT_EXPIRES_IN,
       }
     );
-
     res.json({
       token: token,
       user: {
@@ -200,10 +199,6 @@ export const loginUser = async (req, res) => {
 export const freezeUnfreezeUser = async (req, res) => {
   const { userid } = req.params;
   const { status } = req.body;
-  console.log("====================================");
-  console.log(status);
-  console.log(userid);
-  console.log("====================================");
   try {
     const client = await pool.connect();
     const updateQuery = `UPDATE users SET status = $1 WHERE userid = $2;`;
@@ -224,6 +219,7 @@ export const fetchAllUsers = async (req, res) => {
     const result = await client.query(queryText);
     client.release();
     const users = result.rows;
+    console.log(users);
     res.status(200).json({ users });
   } catch (error) {
     console.error(error);
@@ -319,5 +315,80 @@ export const addOrder = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal Server Error: " + error.message });
+  }
+};
+export const getUserByID = async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const client = await pool.connect();
+    const queryText = "SELECT * FROM users WHERE userid = $1";
+    const result = await client.query(queryText, [userid]);
+    client.release();
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getOrdersByID = async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const client = await pool.connect();
+    const queryText = "SELECT * FROM orders WHERE userid = $1";
+    const result = await client.query(queryText, [userid]);
+    client.release();
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const deleteOrderBYOrderID = async (req, res) => {
+  try {
+    const { orderid } = req.params;
+    const client = await pool.connect();
+    const deleteQuery = "DELETE FROM orders WHERE orderid = $1";
+    await client.query(deleteQuery, [orderid]);
+    client.release();
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const updateUserByID = async (req, res) => {
+  const { userid } = req.params;
+  const { fullname, email, phoneno, address } = req.body;
+
+  try {
+    // Check if the user exists
+    const checkUserQuery = "SELECT * FROM users WHERE userid = $1";
+    const checkUserValues = [userid];
+    const userExists = await pool.query(checkUserQuery, checkUserValues);
+
+    if (userExists.rowCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user details
+    const query = `
+      UPDATE users
+      SET fullname = $1, email = $2, phoneno = $3, address = $4
+      WHERE userid = $5
+    `;
+    const values = [fullname, email, phoneno, address, userid];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ message: "Failed to update user details" });
+    }
+
+    res.json({ message: "User details updated successfully" });
+  } catch (error) {
+    console.error("Error during user details update:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
