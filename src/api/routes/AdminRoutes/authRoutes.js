@@ -9,13 +9,13 @@ import {
   deleteAdmin,
   getRootAdmins,
 } from "../../controllers/adminAuthController";
-import adminAuthMiddleware from "../../middleware/adminAuthMiddleWare";
 import {
   activateUser,
   fetchAllUsers,
   freezeUnfreezeUser,
   updateUserDetails,
 } from "../../controllers/userAuthController";
+import adminAuthMiddleware from "../../middleware/adminAuthMiddleWare";
 const router = express.Router();
 
 router.post("/register", registerAdmin);
@@ -62,5 +62,7 @@ router.get("/protected/fetch_all_users", adminAuthMiddleware, fetchAllUsers);
 
 router.get("/protected/rootadmins", getRootAdmins);
 
-router.post("/protected/token_verify", adminAuthMiddleware);
+router.post("/protected/token_verify", adminAuthMiddleware, (req, res) => {
+  res.json(req.admin);
+});
 export default router;

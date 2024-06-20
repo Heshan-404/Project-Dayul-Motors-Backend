@@ -4,6 +4,9 @@ import config from "../../config/config";
 const adminAuthMiddleware = (req, res, next) => {
   // Check if Authorization header is present
   var authHeader = req.headers.authorization;
+  console.log("====================================");
+  console.log(authHeader);
+  console.log("====================================");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -20,6 +23,9 @@ const adminAuthMiddleware = (req, res, next) => {
 
     // Attach decoded token data to request object
     req.admin = decoded;
+    console.log("====================================");
+    console.log(decoded);
+    console.log("====================================");
     next();
   } catch (error) {
     console.error("Error verifying admin token:", error);
