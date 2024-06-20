@@ -141,8 +141,8 @@ export const placeOrder = async (req, res) => {
       const pdfBytes = await pdfDoc.save();
       const mailOptions = {
         from: {
-          name: "Your Company Name",
-          address: "yourcompany@example.com", // Replace with your company email
+          name: "Dayul Motors",
+          address: "dayulmotors@gmail.com", // Replace with your company email
         },
         to: "heshantharushka2002@gmail.com", // Replace with customer's email
         subject: "Order Confirmation",
