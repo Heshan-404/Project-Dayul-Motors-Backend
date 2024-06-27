@@ -26,13 +26,17 @@ const placeOrder = async (req, res) => {
       const orderId = await generateOrderId(client);
 
       // Get the current time in Sri Lanka
-      const sriLankanTime = new Date().toLocaleTimeString("en-US", {
+      const now = new Date().toLocaleTimeString("en-US", {
         timeZone: "Asia/Colombo",
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
       });
+
+      const [hour, minute, second] = now.split(":");
+      const adjustedHour = hour === "24" ? "00" : hour;
+      const sriLankanTime = `${adjustedHour}:${minute}:${second}`;
 
       // Insert order details into the orders table
       const orderInsertQuery = `
