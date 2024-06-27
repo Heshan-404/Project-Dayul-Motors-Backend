@@ -26,7 +26,7 @@ const placeOrder = async (req, res) => {
       const orderId = await generateOrderId(client);
 
       // Get the current time in Sri Lanka
-      const sriLankanTime = new Date().toLocaleString("en-US", {
+      const sriLankanTime = new Date().toLocaleTimeString("en-US", {
         timeZone: "Asia/Colombo",
         hour: "2-digit",
         minute: "2-digit",
@@ -47,7 +47,6 @@ const placeOrder = async (req, res) => {
         totalAmount,
         sriLankanTime,
       ]);
-
       // Insert order items into the orderitems table
       const orderItemsInsertQuery = `
         INSERT INTO orderitems (orderid, productid, price, quantity)
